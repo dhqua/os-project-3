@@ -424,6 +424,11 @@ int main(int argc, char **argv)
       // Value set to to 1 to represent that only one thread can check the status of a room at a time
       int value = 1;
       int ret = sem_init(&room.roomFull, pshared, value);
+      if(ret < 0)
+      {
+        printf("sem init failed on the room creation!!!");
+        // TODO add exit function later
+      }
     }
 
     cube->rooms[i] = room_col;
@@ -464,6 +469,7 @@ int main(int argc, char **argv)
   }
 
   /* Fill in */
+  //TODO possbily add isSPressed here later?
 
   /* Goes in the interface loop */
   res = interface(cube);
@@ -517,7 +523,11 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
   sem_getvalue(newroom->roomFull, &isAvailable);
   if(isAvailable)
   {
-    sem_wait(newroom->roomFull);
+    int failed = sem_wait(newroom->roomFull);
+    if (failed)
+    {
+      printf("sem_wait function failed! in try_room() \n")
+    }
     // if room is not full return 0
     if(newroom->occupancy < 2)
     {
@@ -580,7 +590,11 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   oldroom->occupancy -= 1;
   newroom->occupancy += 1;
   // Release control over the old room
-  sem_post(oldroom->sleep);
+  int failed = sem_post(oldroom->roomFull);
+  if(failed)
+  {
+    printf("sem_post function failed! in switch_rooms() \n")
+  }
 
   /* Updates room wizards and determines opponent */
   if (newroom->wizards[0] == NULL)
@@ -634,7 +648,11 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
 
     /* Fill in */
     self->status = 1;
-    sem_wait(self->sleep);
+    int failed = sem_wait(self->sleep);
+    if (failed)
+    {
+      printf("sem_wait function failed! in fight_wizard() \n")
+    }
 
     return 1;
   }
