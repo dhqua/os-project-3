@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <semaphore.h>
 
 #include "cube.h"
 #include "wizard.h"
@@ -22,7 +23,7 @@ void command_line_usage()
 {
   fprintf(stderr, "-size <size of cube> -teamA <size of team> -teamB <size of team> -seed <seed value>\n");
 }
-
+//TODO implement kill wizards after thread functionality has been added
 void kill_wizards(struct wizard *w)
 {
   /* Fill in */
@@ -265,6 +266,16 @@ int interface(void *cube_ref)
       /* Stop the game */
       return 1;
     }
+    else if (!strcmp(command, "s"))
+    {
+      // TODO add step functionality 
+      return 1;
+    }
+    else if (!strcmp(command, "c"))
+    {
+      // TODO add continue functionality 
+      return 1;
+    }
     else
     {
       fprintf(stderr, "unknown command %s\n", command);
@@ -410,8 +421,8 @@ int main(int argc, char **argv)
 
       // Sets initializes semaphore that is declared within the room
       int pshared = 0;
-      // Value set to to 2 to represent capacity of room
-      int value = 2;
+      // Value set to to 1 to represent that only one thread can check the status of a room at a time
+      int value = 1;
       int ret = sem_init(&room.roomFull, pshared, value);
     }
 
@@ -425,8 +436,7 @@ int main(int argc, char **argv)
   assert(cube->teamA_wizards);
 
   cube->teamB_size = teamB_size;
-  cube->teamB_wizards = (struct wizard **)malloc(sizeof(struct wizard *) *
-                                                 teamB_size);
+  cube->teamB_wizards = (struct wizard **)malloc(sizeof(struct wizard *) * teamB_size);
 
   assert(cube->teamB_wizards);
 
@@ -584,6 +594,7 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
            other->team, other->id);
 
     /* Fill in */
+    other->status = 1;
   }
 
   /* Self freezes and release the lock */
@@ -595,6 +606,8 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
            other->team, other->id);
 
     /* Fill in */
+    self->status = 1;
+    sem_wait(self->sleep);
 
     return 1;
   }
@@ -616,6 +629,13 @@ int free_wizard(struct wizard *self, struct wizard *other, struct room *room)
            other->team, other->id);
 
     /* Fill in */
+
+    int failed = sem_post(other->sleep);
+    if(failed)
+    {
+      printf("sem_post function failed! in free_wizard function\n")
+    }
+
   }
 
   /* The spell failed */
