@@ -24,7 +24,7 @@ struct room {
   struct wizard *wizards[2];
 
   /* Fill in as required */
-
+  int occupancy;
   sem_t roomFull;
 };
 
