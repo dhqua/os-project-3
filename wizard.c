@@ -36,7 +36,7 @@ wizard_func(void *wizard_descr)
 			int failed = sem_wait(self->sleep);
 			if (failed)
 			{
-				printf("sem_wait function failed! in wizard_func() \n")
+				printf("sem_wait function failed! in wizard_func() \n");
 			}
 		}
 

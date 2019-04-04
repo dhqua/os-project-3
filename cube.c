@@ -29,13 +29,13 @@ void kill_wizards(struct wizard *w)
 {
   /* Fill in */
 
-  int threadCount = wizard[0]->cube->teamA_size + wizard->cube->teamB_size;
+  int threadCount = w[0].cube->teamA_size + w[0].cube->teamB_size;
   int i;
 
   // Kills all the the threads
   for(i = 0; i < threadCount; i++)
   {
-    pthread_cancel(wizard[0]->cube->threads[i]);
+    pthread_cancel(w->cube->threads[i]);
   }
 
   return;
@@ -49,7 +49,7 @@ int check_winner(struct cube *cube)
   // Check if all the wizards of a givn team are frozen
   // TODO
   int isTeamAActive = FALSE;
-  int isTeamBActice = FALSE;
+  int isTeamBActive = FALSE;
   int i;
 
   for(i = 0 ; i < cube->teamA_size; i++)
@@ -213,7 +213,7 @@ struct wizard *init_wizard(struct cube *cube, char team, int id)
   // Sets initializes semaphore that is declared within the wizard
   int pshared = 0;
   int value = 1;
-  int ret = sem_init(&w.sleep, pshared, value);
+  int ret = sem_init(w->sleep, pshared, value);
 
   return w;
 }
@@ -272,8 +272,8 @@ int interface(void *cube_ref)
         // create the threads array
         // pass the threads using pthread create
         // pass the wizard_func
-        int threadCount = cube->teamA_size + cube->teamB_wizards;
-        cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount;
+        int threadCount = cube->teamA_size + cube->teamB_size;
+        cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount);
 
         int i;
         int teamBStart = cube->teamA_size ; // may be off by 1
@@ -295,7 +295,7 @@ int interface(void *cube_ref)
     {
       /* Stop the game */
       // Kills all wizards regardless of which team is passed
-      kill_wizards(cube->teamA_wizards);
+      kill_wizards(cube->teamA_wizards[0]);
 
       return 1;
     }
@@ -456,7 +456,7 @@ int main(int argc, char **argv)
       int pshared = 0;
       // Value set to to 1 to represent that only one thread can check the status of a room at a time
       int value = 1;
-      int ret = sem_init(&room.roomFull, pshared, value);
+      int ret = sem_init(room->roomFull, pshared, value);
       if(ret < 0)
       {
         printf("sem init failed on the room creation!!!");
@@ -558,7 +558,7 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
     int failed = sem_wait(newroom->roomFull);
     if (failed)
     {
-      printf("sem_wait function failed! in try_room() \n")
+      printf("sem_wait function failed! in try_room() \n");
     }
     // if room is not full return 0
     if(newroom->occupancy < 2)
@@ -624,7 +624,7 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   int failed = sem_post(oldroom->roomFull);
   if(failed)
   {
-    printf("sem_post function failed! in switch_rooms() \n")
+    printf("sem_post function failed! in switch_rooms() \n");
   }
 
   /* Updates room wizards and determines opponent */
@@ -682,7 +682,7 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
     int failed = sem_wait(self->sleep);
     if (failed)
     {
-      printf("sem_wait function failed! in fight_wizard() \n")
+      printf("sem_wait function failed! in fight_wizard() \n");
     }
 
     return 1;
@@ -710,7 +710,7 @@ int free_wizard(struct wizard *self, struct wizard *other, struct room *room)
     int failed = sem_post(other->sleep);
     if(failed)
     {
-      printf("sem_post function failed! in free_wizard function\n")
+      printf("sem_post function failed! in free_wizard function\n");
     }
 
   }
