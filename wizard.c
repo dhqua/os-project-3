@@ -31,9 +31,13 @@ wizard_func(void *wizard_descr)
 	while (1)
 	{
 		// Status is frozen then self sleep until another wizard can wake this thread
-		if(self->status)
+		if (self->status)
 		{
-    	sem_wait(self->sleep);
+			int failed = sem_wait(self->sleep);
+			if (failed)
+			{
+				printf("sem_wait function failed! in wizard_func() \n")
+			}
 		}
 
 		/* Loops until he's able to get a hold on both the old and new rooms */
