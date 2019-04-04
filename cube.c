@@ -518,7 +518,16 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
   if(isAvailable)
   {
     sem_wait(newroom->roomFull);
+    // if room is not full return 0
+    if(newroom->occupancy < 2)
+    {
     return 0;
+    }
+    else
+    {
+      return 1;
+    }
+    
   }
   else
   {
@@ -568,6 +577,10 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   }
 
   /* Fill in */
+  oldroom->occupancy -= 1;
+  newroom->occupancy += 1;
+  // Release control over the old room
+  sem_post(oldroom->sleep);
 
   /* Updates room wizards and determines opponent */
   if (newroom->wizards[0] == NULL)
