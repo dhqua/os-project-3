@@ -506,12 +506,26 @@ choose_room(struct wizard *w)
   return w->cube->rooms[(w->x + w->cube->size + newx) % w->cube->size][(w->y + w->cube->size + newy) % w->cube->size];
 }
 
+// Returns if found a spot in a room successfully
 int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
 {
 
   /* Fill in */
+  // Checks the semaphore, if it is 1 then then does a sem_wait to enter the room
+  int isAvailable;
 
-  return 1;
+  sem_getvalue(newroom->roomFull, &isAvailable);
+  if(isAvailable)
+  {
+    sem_wait(newroom->roomFull);
+    return 0;
+  }
+  else
+  {
+    // try room failed
+    return 1;
+  }
+  
 }
 
 struct wizard *
@@ -630,6 +644,7 @@ int free_wizard(struct wizard *self, struct wizard *other, struct room *room)
 
     /* Fill in */
 
+    other->status = 0;
     int failed = sem_post(other->sleep);
     if(failed)
     {
