@@ -30,6 +30,11 @@ wizard_func(void *wizard_descr)
 	/* Infinite loop */
 	while (1)
 	{
+		// Status is frozen then self sleep until another wizard can wake this thread
+		if(self->status)
+		{
+    	sem_wait(self->sleep);
+		}
 
 		/* Loops until he's able to get a hold on both the old and new rooms */
 		while (1)
