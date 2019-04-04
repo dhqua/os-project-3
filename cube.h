@@ -3,7 +3,6 @@
 
 #define SOLUTION
 
-struct cube;
 
 struct wizard {
   int x;
@@ -40,6 +39,7 @@ struct cube {
   struct room ***rooms;
 
   /* Fill in as required */
+  pthread_t * threads;
 };
 
 extern void print_wizard(struct wizard *);
