@@ -37,7 +37,8 @@ int
 check_winner(struct cube* cube)
 {
   /* Fill in */
-
+  // Check if all the wizards of a givn team are frozen 
+  // TODO 
   return 0;
 }
 
@@ -167,79 +168,81 @@ struct wizard *init_wizard(struct cube* cube, char team, int id)
     }
 
   /* Fill in */
-
+  // Sets initializes semaphore that is declared within the wizard
+  int pshared = 0;
+  int value = 1;
+  int ret = sem_init(&w.sleep, pshared,value);
 
   return w;
 }
 
-int 
-interface(void *cube_ref)
+int interface(void *cube_ref)
 {
-  struct cube* cube;
-  char *line;
-  char *command;
-  int i;
+    struct cube* cube;
+    char *line;
+    char *command;
+    int i;
 
-  cube = (struct cube *)cube_ref;
-  assert(cube);
+    cube = (struct cube *)cube_ref;
+    assert(cube);
 
-  using_history();
-  while (1)
+    using_history();
+    while (1)
     {
-      line = readline("cube> ");
-      if (line == NULL) continue;
-      if (strlen(line) == 0) continue;
-      
-      add_history(line);
+        line = readline("cube> ");
+        if (line == NULL) continue;
+        if (strlen(line) == 0) continue;
 
-      i = 0;
-      while (isspace(line[i])) i++;
-      
-      command = &line[i];
-      if (!strcmp(command, "exit"))
-	{
-	  return 0;
-	}
-      else if (!strcmp(command, "show"))
-	{
-	  print_cube(cube);
-	}
-      else if (!strcmp(command, "start"))
-	{
-	  if (cube->game_status == 1)
-	    {
-	      fprintf(stderr, "Game is over. Cannot be started again\n");
-	    }
-	  else if (cube->game_status == 0)
-	    {
-	      fprintf(stderr, "Game is in progress. Cannot be started again\n");
-	    }
-	  else
-	    {
-	      cube->game_status = 0;
-	      
-	      /* Start the game */
+        add_history(line);
 
-	      /* Fill in */
+        i = 0;
+        while (isspace(line[i])) i++;
+
+        command = &line[i];
+        if (!strcmp(command, "exit"))
+        {
+            return 0;
+        }
+        else if (!strcmp(command, "show"))
+        {
+            print_cube(cube);
+        }
+        else if (!strcmp(command, "start"))
+        {
+            if (cube->game_status == 1)
+            {
+                fprintf(stderr, "Game is over. Cannot be started again\n");
+            }
+            else if (cube->game_status == 0)
+            {
+                fprintf(stderr, "Game is in progress. Cannot be started again\n");
+            }
+            else
+            {
+                cube->game_status = 0;
+
+                /* Start the game */
+
+                /* Fill in */
 
 
 
-	    }
-	}
-      else if (!strcmp(command, "stop"))
-	{
-	  /* Stop the game */
-	  return 1;
-	}
-      else
-	{
-	  fprintf(stderr, "unknown command %s\n", command);
-	}
+            }
+        }
+        else if (!strcmp(command, "stop"))
+        {
+            /* Stop the game */
+            return 1;
+        }
+        else
+        {
+            fprintf(stderr, "unknown command %s\n", command);
+        }
 
-      free(line);
+        free(line);
     }
 
-  return 0;
+    return 0;
 }
 
 int 
@@ -376,7 +379,12 @@ main(int argc, char** argv)
 	  room_col[j] = room;
 
 	  /* Fill in */
-
+         
+      // Sets initializes semaphore that is declared within the room
+      int pshared = 0;
+      // Value set to to 2 to represent capacity of room 
+      int value = 2;
+      int ret = sem_init(&room.roomFull, pshared,value);
 	}
       
       cube->rooms[i] = room_col;

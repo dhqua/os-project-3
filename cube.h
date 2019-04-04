@@ -14,6 +14,8 @@ struct wizard {
   struct cube *cube; 
 
   /* Fill in as required */
+  //Semaphore that will be used to sleep the wizard 
+  sem_t sleep;
 };
   
 struct room {
@@ -22,6 +24,8 @@ struct room {
   struct wizard *wizards[2];
 
   /* Fill in as required */
+
+  sem_t roomFull;
 };
 
 struct cube {
