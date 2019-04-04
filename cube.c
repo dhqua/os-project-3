@@ -30,12 +30,47 @@ void kill_wizards(struct wizard *w)
   return;
 }
 
+// retunns winner of the game
+// -1 game still active , 0 -team A ,1 - team B
 int check_winner(struct cube *cube)
 {
   /* Fill in */
   // Check if all the wizards of a givn team are frozen
   // TODO
-  return 0;
+  int isTeamAActive = FALSE;
+  int isTeamBActice = FALSE;
+  int i;
+
+  for(i = 0 ; i < cube->teamA_size; i++)
+  {
+    // wizard is active , status == 0
+    if (!cube->teamA_wizards[i]->status )
+    {
+      isTeamAActive = TRUE;
+    }
+  }
+
+  for(i =0 ; i < cube->teamB_size; i++)
+  {
+    // wizard is active , status == 0
+    if (!cube->teamB_wizards[i]->status )
+    {
+      isTeamBActive = TRUE;
+    }
+  }
+
+  if (!isTeamAActive)
+  {
+    return 1;
+  } else if( !isTeamBActive)
+  {
+    return 0;
+  } else 
+  {
+    return 1;
+  }
+
+
 }
 
 void print_cube(struct cube *cube)
