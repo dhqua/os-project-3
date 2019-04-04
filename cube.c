@@ -12,6 +12,8 @@
 #include "cube.h"
 #include "wizard.h"
 
+// git username test
+
 #define DEFAULT_CUBE_SIZE 4
 #define DEFAULT_TEAM_SIZE 5
 #define DEFAULT_SEED 1
