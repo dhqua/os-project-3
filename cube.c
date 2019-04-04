@@ -24,9 +24,19 @@ void command_line_usage()
   fprintf(stderr, "-size <size of cube> -teamA <size of team> -teamB <size of team> -seed <seed value>\n");
 }
 //TODO implement kill wizards after thread functionality has been added
+// Kills all of the wizards given either teamA or teamB
 void kill_wizards(struct wizard *w)
 {
   /* Fill in */
+
+  int threadCount = wizard[0]->cube->teamA_size + wizard->cube->teamB_size;
+  int i;
+
+  // Kills all the the threads
+  for(i = 0; i < threadCount; i++)
+  {
+    pthread_cancel(wizard[0]->cube->threads[i]);
+  }
 
   return;
 }
@@ -259,11 +269,34 @@ int interface(void *cube_ref)
         /* Start the game */
 
         /* Fill in */
+        // create the threads array
+        // pass the threads using pthread create
+        // pass the wizard_func
+        int threadCount = cube->teamA_size + cube->teamB_wizards;
+        cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount;
+
+        int i;
+        int teamBStart = cube->teamA_size ; // may be off by 1
+        // Start threads for team A
+        for(i = 0; i < cube->teamA_size; i++)
+        {
+          pthread_create(&cube->threads[i], NULL, wizard_func, &cube->teamA_wizards[i]);
+        }
+        // Start threads for team B
+        for(i = 0; i < cube->teamB_size; i++, teamBStart++)
+        {
+          pthread_create(&cube->threads[teamBStart], NULL, wizard_func, &cube->teamB_wizards[i]);
+        }
+
+        
       }
     }
     else if (!strcmp(command, "stop"))
     {
       /* Stop the game */
+      // Kills all wizards regardless of which team is passed
+      kill_wizards(cube->teamA_wizards);
+
       return 1;
     }
     else if (!strcmp(command, "s"))
@@ -491,8 +524,7 @@ void dostuff()
   return;
 }
 
-struct room *
-choose_room(struct wizard *w)
+struct room * choose_room(struct wizard *w)
 {
   int newx = 0;
   int newy = 0;
@@ -547,8 +579,7 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
   
 }
 
-struct wizard *
-find_opponent(struct wizard *self, struct room *room)
+struct wizard * find_opponent(struct wizard *self, struct room *room)
 {
   struct wizard *other = NULL;
 
