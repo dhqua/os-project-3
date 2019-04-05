@@ -281,12 +281,12 @@ int interface(void *cube_ref)
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
-          pthread_create(&cube->threads[i], NULL, wizard_func, &cube->teamA_wizards[i]);
+          pthread_create(&cube->threads[i], NULL, wizard_func, cube->teamA_wizards[i]);
         }
         // Start threads for team B
         for(i = 0; i < cube->teamB_size; i++, teamBStart++)
         {
-          pthread_create(&cube->threads[teamBStart], NULL, wizard_func, &cube->teamB_wizards[i]);
+          pthread_create(&cube->threads[teamBStart], NULL, wizard_func, cube->teamB_wizards[i]);
         }
         
         printf("after the thread is created!\n");
