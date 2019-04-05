@@ -21,7 +21,6 @@ wizard_func(void *wizard_descr)
 	cube = self->cube;
 	assert(cube);
 
-    printf("wizard #%d is running!", self->id);
 	/* Sets starting room */
 	oldroom = cube->rooms[self->x][self->y];
 	assert(oldroom);
@@ -32,6 +31,8 @@ wizard_func(void *wizard_descr)
 	/* Infinite loop */
 	while (1)
 	{
+        if(cube->game_status)
+            return;
 		// Status is frozen then self sleep until another wizard can wake this thread
 		if (self->status)
 		{
@@ -118,6 +119,10 @@ wizard_func(void *wizard_descr)
 			// TODO add post for press S semaphore
 		}
 
+        if(check_winner(cube)){
+            cube->game_status = 1;
+            return;
+        };
 		/* Thinks about what to do next */
 		dostuff();
 

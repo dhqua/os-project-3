@@ -19,6 +19,8 @@
 #define TRUE 1
 #define FALSE 0
 
+
+int hasStarted = FALSE;
 void command_line_usage()
 {
   fprintf(stderr, "-size <size of cube> -teamA <size of team> -teamB <size of team> -seed <seed value>\n");
@@ -29,7 +31,7 @@ void kill_wizards(struct wizard *w)
 {
   /* Fill in */
 
-  int threadCount = w[0].cube->teamA_size + w[0].cube->teamB_size;
+  int threadCount = w->cube->teamA_size + w->cube->teamB_size;
   int i;
 
   // Kills all the the threads
@@ -70,13 +72,11 @@ int check_winner(struct cube *cube)
     }
   }
 
-  if (!isTeamAActive)
-  {
-    return 1;
-  } else if( !isTeamBActive)
+  if (isTeamAActive && isTeamBActive )
   {
     return 0;
-  } else 
+  } 
+  else 
   {
     return 1;
   }
@@ -231,6 +231,17 @@ int interface(void *cube_ref)
   using_history();
   while (1)
   {
+  int a;
+  int tCount = cube->teamA_size + cube->teamB_size;    
+  if(cube->game_status == 0 )
+  {
+        int q;
+       for( a = 0; a < tCount; a++)
+      {
+          pthread_join(cube->threads[i], NULL);
+      } 
+
+  }    
     line = readline("cube> ");
     if (line == NULL)
       continue;
@@ -254,6 +265,8 @@ int interface(void *cube_ref)
     }
     else if (!strcmp(command, "start"))
     {
+      
+      hasStarted = 1;
       if (cube->game_status == 1)
       {
         fprintf(stderr, "Game is over. Cannot be started again\n");
