@@ -54,3 +54,5 @@ dkms.conf
 #VS Code
 .vscode/
 cube
+runCube
+.nsf*
