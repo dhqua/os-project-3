@@ -33,7 +33,7 @@ wizard_func(void *wizard_descr)
 		// Status is frozen then self sleep until another wizard can wake this thread
 		if (self->status)
 		{
-			int failed = sem_wait(self->sleep);
+			int failed = sem_wait(&self->sleep);
 			if (failed)
 			{
 				printf("sem_wait function failed! in wizard_func() \n");

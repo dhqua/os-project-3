@@ -213,7 +213,7 @@ struct wizard *init_wizard(struct cube *cube, char team, int id)
   // Sets initializes semaphore that is declared within the wizard
   int pshared = 0;
   int value = 1;
-  int ret = sem_init(w->sleep, pshared, value);
+  int ret = sem_init(&w->sleep, pshared, value);
 
   return w;
 }
@@ -456,12 +456,13 @@ int main(int argc, char **argv)
       int pshared = 0;
       // Value set to to 1 to represent that only one thread can check the status of a room at a time
       int value = 1;
-      int ret = sem_init(room->roomFull, pshared, value);
+      int ret = sem_init(&room->roomFull, pshared, value);
+      
       if(ret < 0)
       {
         printf("sem init failed on the room creation!!!");
         // TODO add exit function later
-      }
+      } 
     }
 
     cube->rooms[i] = room_col;
@@ -552,10 +553,10 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
   // Checks the semaphore, if it is 1 then then does a sem_wait to enter the room
   int isAvailable;
 
-  sem_getvalue(newroom->roomFull, &isAvailable);
+  sem_getvalue(&newroom->roomFull, &isAvailable);
   if(isAvailable)
   {
-    int failed = sem_wait(newroom->roomFull);
+    int failed = sem_wait(&newroom->roomFull);
     if (failed)
     {
       printf("sem_wait function failed! in try_room() \n");
@@ -621,7 +622,7 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   oldroom->occupancy -= 1;
   newroom->occupancy += 1;
   // Release control over the old room
-  int failed = sem_post(oldroom->roomFull);
+  int failed = sem_post(&oldroom->roomFull);
   if(failed)
   {
     printf("sem_post function failed! in switch_rooms() \n");
@@ -679,7 +680,7 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
 
     /* Fill in */
     self->status = 1;
-    int failed = sem_wait(self->sleep);
+    int failed = sem_wait(&self->sleep);
     if (failed)
     {
       printf("sem_wait function failed! in fight_wizard() \n");
@@ -707,7 +708,7 @@ int free_wizard(struct wizard *self, struct wizard *other, struct room *room)
     /* Fill in */
 
     other->status = 0;
-    int failed = sem_post(other->sleep);
+    int failed = sem_post(&other->sleep);
     if(failed)
     {
       printf("sem_post function failed! in free_wizard function\n");
