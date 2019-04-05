@@ -15,7 +15,9 @@ wizard_func(void *wizard_descr)
 	struct wizard *self;
 	struct wizard *other;
 
-	self = (struct wizard *)wizard_descr;
+    printf("wizard #%d is running!", self->id);
+	
+    self = (struct wizard *)wizard_descr;
 	assert(self);
 	cube = self->cube;
 	assert(cube);

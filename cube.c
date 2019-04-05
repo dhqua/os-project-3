@@ -277,6 +277,7 @@ int interface(void *cube_ref)
 
         int i;
         int teamBStart = cube->teamA_size - 1 ; // may be off by 1
+        printf("before the thread is created!\n");
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
@@ -287,8 +288,8 @@ int interface(void *cube_ref)
         {
           pthread_create(&cube->threads[teamBStart], NULL, wizard_func, &cube->teamB_wizards[i]);
         }
-
         
+        printf("after the thread is created!\n");
       }
     }
     else if (!strcmp(command, "stop"))
