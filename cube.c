@@ -276,7 +276,7 @@ int interface(void *cube_ref)
         cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount);
 
         int i;
-        int teamBStart = cube->teamA_size ; // may be off by 1
+        int teamBStart = cube->teamA_size - 1 ; // may be off by 1
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
