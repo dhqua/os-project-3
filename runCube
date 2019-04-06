@@ -1,1 +1,1 @@
-./cube –size 2 –seed 2 –teamA 1 –teamB 2
+./cube –size 2 –teamA 1 –teamB 2 -seed 2
