@@ -644,15 +644,15 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   }
 
   /* Fill in */
-  // oldroom->occupancy -= 1;
-  // newroom->occupancy += 1;
+  oldroom->occupancy -= 1;
+  newroom->occupancy += 1;
   // Release control over the old room
   //TODO remove this line, may be cause of the bug where 3 wizards enter a room
-  int failed = sem_post(&oldroom->roomFull);
-  if(failed)
-  {
-    printf("sem_post function failed! in switch_rooms() \n");
-  }
+  // int failed = sem_post(&oldroom->roomFull);
+  // if(failed)
+  // {
+  //   printf("sem_post function failed! in switch_rooms() \n");
+  // }
 
   /* Updates room wizards and determines opponent */
   if (newroom->wizards[0] == NULL)
