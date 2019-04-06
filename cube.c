@@ -233,12 +233,15 @@ int interface(void *cube_ref)
   {
   int a;
   int tCount = cube->teamA_size + cube->teamB_size;    
-  if(cube->game_status == 0 )
+  if(cube->game_status > 0 )
   {
-        int q;
+       void * q;
        for( a = 0; a < tCount; a++)
       {
-          pthread_join(cube->threads[i], NULL);
+          if(pthread_join(cube->threads[a], &q))
+          {
+            printf("\n THE JOIN FUNCTION FAILED! \n");
+          }
       } 
 
   }    
@@ -294,15 +297,21 @@ int interface(void *cube_ref)
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
-          pthread_create(&cube->threads[i], NULL, wizard_func, cube->teamA_wizards[i]);
-        }
+          if(pthread_create(&cube->threads[i], NULL, wizard_func, cube->teamA_wizards[i]))
+          {
+            printf("\n THE CREATE FUNCTION FAILED! \n");
+            }
         // Start threads for team B
         for(i = 0; i < cube->teamB_size; i++, teamBStart++)
         {
-          pthread_create(&cube->threads[teamBStart], NULL, wizard_func, cube->teamB_wizards[i]);
+          if( pthread_create(&cube->threads[teamBStart], NULL, wizard_func, cube->teamB_wizards[i]))
+          {
+            printf("\n THE CREATE FUNCTION FAILED! \n");
+          }
         }
         
         printf("after the thread is created!\n");
+      }
       }
     }
     else if (!strcmp(command, "stop"))
@@ -636,6 +645,7 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   oldroom->occupancy -= 1;
   newroom->occupancy += 1;
   // Release control over the old room
+  //TODO remove this line, may be cause of the bug where 3 wizards enter a room
   int failed = sem_post(&oldroom->roomFull);
   if(failed)
   {
