@@ -238,6 +238,7 @@ int interface(void *cube_ref)
        void * q;
        for( a = 0; a < tCount; a++)
       {
+          printf("\n THE JOIN FUNCTION IS CALLED! \n");
           if(pthread_join(cube->threads[a], &q))
           {
             printf("\n THE JOIN FUNCTION FAILED! \n");
@@ -300,7 +301,8 @@ int interface(void *cube_ref)
           if(pthread_create(&cube->threads[i], NULL, wizard_func, cube->teamA_wizards[i]))
           {
             printf("\n THE CREATE FUNCTION FAILED! \n");
-            }
+          }
+        }
         // Start threads for team B
         for(i = 0; i < cube->teamB_size; i++, teamBStart++)
         {
@@ -311,7 +313,6 @@ int interface(void *cube_ref)
         }
         
         printf("after the thread is created!\n");
-      }
       }
     }
     else if (!strcmp(command, "stop"))
@@ -574,32 +575,33 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
 
   /* Fill in */
   // Checks the semaphore, if it is 1 then then does a sem_wait to enter the room
-  int isAvailable;
+  // int isAvailable;
 
-  sem_getvalue(&newroom->roomFull, &isAvailable);
-  if(isAvailable)
-  {
+  // sem_getvalue(&newroom->roomFull, &isAvailable);
+  // if(isAvailable)
+  // {
     int failed = sem_wait(&newroom->roomFull);
     if (failed)
     {
       printf("sem_wait function failed! in try_room() \n");
     }
     // if room is not full return 0
-    if(newroom->occupancy < 2)
+    if(newroom->wizards[0] == NULL || newroom->wizards[1] == NULL ) 
     {
-    return 0;
+      return 0;
     }
     else
     {
+      sem_post(&newroom->roomFull);
       return 1;
     }
     
-  }
-  else
-  {
-    // try room failed
-    return 1;
-  }
+  // }
+  // else
+  // {
+  //   // try room failed
+  //   return 1;
+  // }
   
 }
 
@@ -646,11 +648,11 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   newroom->occupancy += 1;
   // Release control over the old room
   //TODO remove this line, may be cause of the bug where 3 wizards enter a room
-  int failed = sem_post(&oldroom->roomFull);
-  if(failed)
-  {
-    printf("sem_post function failed! in switch_rooms() \n");
-  }
+  // int failed = sem_post(&oldroom->roomFull);
+  // if(failed)
+  // {
+  //   printf("sem_post function failed! in switch_rooms() \n");
+  // }
 
   /* Updates room wizards and determines opponent */
   if (newroom->wizards[0] == NULL)
