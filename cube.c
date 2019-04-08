@@ -20,6 +20,8 @@
 #define FALSE 0
 
 
+
+
 int hasStarted = FALSE;
 void command_line_usage()
 {
@@ -233,19 +235,20 @@ int interface(void *cube_ref)
   {
   int a;
   int tCount = cube->teamA_size + cube->teamB_size;    
-  if(cube->game_status > 0 )
-  {
-       void * q;
-       for( a = 0; a < tCount; a++)
-      {
-          printf("\n THE JOIN FUNCTION IS CALLED! \n");
-          if(pthread_join(cube->threads[a], &q))
-          {
-            printf("\n THE JOIN FUNCTION FAILED! \n");
-          }
-      } 
 
-  }    
+  // if(cube->game_status >= 0 )
+  // {
+  //      void * q;
+  //      for( a = 0; a < tCount; a++)
+  //     {
+  //         printf("\n THE JOIN FUNCTION IS CALLED! \n");
+  //         if(pthread_join(cube->threads[a], &q))
+  //         {
+  //           printf("\n THE JOIN FUNCTION FAILED! \n");
+  //         }
+  //     } 
+
+  // }    
     line = readline("cube> ");
     if (line == NULL)
       continue;
@@ -303,7 +306,7 @@ int interface(void *cube_ref)
             printf("\n THE CREATE FUNCTION FAILED! \n");
           }
         }
-        // Start threads for team B
+        // Start threajds for team B
         for(i = 0; i < cube->teamB_size; i++, teamBStart++)
         {
           if( pthread_create(&cube->threads[teamBStart], NULL, wizard_func, cube->teamB_wizards[i]))
@@ -312,7 +315,12 @@ int interface(void *cube_ref)
           }
         }
         
+        // Spin lock until
         printf("after the thread is created!\n");
+        while(check_winner(cube) == 0)
+        {
+
+        }  
       }
     }
     else if (!strcmp(command, "stop"))
@@ -359,6 +367,12 @@ int main(int argc, char **argv)
 
   /* Parse command line and fill:
      teamA_size, timeBsize, cube_size, and seed */
+     
+  // Sets initializes semaphore that is declared within the room
+  int pshared = 0;
+  // Value set to to 1 to represent that only one thread can check the status of a room at a time
+  int value = 1;
+  int ret = sem_init(&stepSemaphore, pshared, value);
 
   i = 1;
   while (i < argc)

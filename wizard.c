@@ -31,6 +31,13 @@ wizard_func(void *wizard_descr)
 	/* Infinite loop */
 	while (1)
 	{
+		sem_wait(&stepSemaphore);
+
+		// if the game status is one then kill the thread	
+		if(check_winner(cube)){
+					cube->game_status = 1;
+					return;
+				};
         if(cube->game_status)
             return;
 		// Status is frozen then self sleep until another wizard can wake this thread
@@ -128,6 +135,8 @@ wizard_func(void *wizard_descr)
 
 		oldroom = newroom;
 		newroom = choose_room(self);
+
+		// sem_post(&stepSemaphore);
 	}
 
 	return NULL;

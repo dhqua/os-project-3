@@ -4,6 +4,8 @@
 #define SOLUTION
 #include <semaphore.h>
 
+sem_t stepSemaphore;
+
 struct wizard {
   int x;
   int y;
