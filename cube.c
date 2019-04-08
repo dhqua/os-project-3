@@ -658,8 +658,8 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   }
 
   /* Fill in */
-  oldroom->occupancy -= 1;
-  newroom->occupancy += 1;
+  // oldroom->occupancy -= 1;
+  // newroom->occupancy += 1;
   // Release control over the old room
   //TODO remove this line, may be cause of the bug where 3 wizards enter a room
   // int failed = sem_post(&oldroom->roomFull);
