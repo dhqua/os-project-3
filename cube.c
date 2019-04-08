@@ -332,6 +332,8 @@ int interface(void *cube_ref)
             printf("\n THE CREATE FUNCTION FAILED! \n");
           }
         }
+
+        printPrompt = TRUE;
         
         // Spin lock until
         printf("after the thread is created!\n");
@@ -413,7 +415,7 @@ int main(int argc, char **argv)
   // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
   int stepValue = 0;
-  sem_init(&stepSemaphore, pshared, value);
+  sem_init(&stepSemaphore, pshared, stepValue);
   sem_init(&cImplementation, pshared, value);
   printPrompt = FALSE;
 
