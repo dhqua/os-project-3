@@ -42,18 +42,16 @@ void kill_wizards(struct wizard *w)
   }
   w->cube->game_status = -1;
 
-  // w->cube->game_status = 1;
 
   return;
 }
 
-// retunns winner of the game
+// returns winner of the game
 // -1 game still active , 0 -team A ,1 - team B
 int check_winner(struct cube *cube)
 {
   /* Fill in */
   // Check if all the wizards of a givn team are frozen
-  // TODO
   int isTeamAActive = FALSE;
   int isTeamBActive = FALSE;
   int i;
@@ -217,7 +215,7 @@ struct wizard *init_wizard(struct cube *cube, char team, int id)
   }
 
   /* Fill in */
-  // Sets initializes semaphore that is declared within the wizard
+  // Initializes semaphore that is declared within the wizard
   int pshared = 0;
   int value = 1;
   int ret = sem_init(&w->sleep, pshared, value);
@@ -241,21 +239,7 @@ int interface(void *cube_ref)
   int a;
   int tCount = cube->teamA_size + cube->teamB_size;    
 
-  // if(cube->game_status >= 0 )
-  // {
-  //      void * q;
-  //      for( a = 0; a < tCount; a++)
-  //     {
-  //         printf("\n THE JOIN FUNCTION IS CALLED! \n");
-  //         if(pthread_join(cube->threads[a], &q))
-  //         {
-  //           printf("\n THE JOIN FUNCTION FAILED! \n");
-  //         }
-  //     } 
-
-  // } 
-
-
+  
     if(cube->game_status == 0)
     {
       // Spin lock until the wizard is done with its move
@@ -292,7 +276,6 @@ int interface(void *cube_ref)
     else if (!strcmp(command, "start"))
     {
       
-      // hasStarted = TRUE;
       if (cube->game_status == 1)
       {
         fprintf(stderr, "Game is over. Cannot be started again\n");
@@ -308,11 +291,7 @@ int interface(void *cube_ref)
         cube->game_status = 0;
 
         /* Start the game */
-
-        /* Fill in */
-        // create the threads array
-        // pass the threads using pthread create
-        // pass the wizard_func
+        //Creates the thread of all wizard threads
         int threadCount = cube->teamA_size + cube->teamB_size;
         cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount );
 
@@ -337,10 +316,6 @@ int interface(void *cube_ref)
 
         printPrompt = TRUE;
         
-        // while(check_winner(cube) == 0)
-        // {
-
-        // }  
       }
     }
     else if (!strcmp(command, "stop"))
@@ -349,14 +324,12 @@ int interface(void *cube_ref)
       // Kills all wizards regardless of which team is passed
       kill_wizards(cube->teamA_wizards[0]);
       printPrompt = TRUE;
-      // return 1;
     }
     else if (!strcmp(command, "s"))
     {
-      // TODO add step functionality 
+      // Posts to the stepSemaphore to allow one wizard thread to wake up and finish its turn 
       sem_post(&stepSemaphore);
         
-      // return 1;
     }
     else if (!strcmp(command, "c"))
     {
@@ -380,7 +353,6 @@ int interface(void *cube_ref)
            break;
          }
        }
-      // TODO add continue functionality 
       return 1;
     }
     else
@@ -410,7 +382,7 @@ int main(int argc, char **argv)
   /* Parse command line and fill:
      teamA_size, timeBsize, cube_size, and seed */
      
-  // Sets initializes semaphore that is declared within the room
+  // Initializes semaphore that is declared within the room
   int pshared = 0;
   // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
@@ -536,17 +508,6 @@ int main(int argc, char **argv)
 
       /* Fill in */
 
-      // Sets initializes semaphore that is declared within the room
-      // int pshared = 0;
-      // Value set to to 1 to represent that only one thread can check the status of a room at a time
-      // int value = 1;
-      // int ret = sem_init(&room->roomFull, pshared, value);
-      
-      // if(ret < 0)
-      // {
-      //   printf("sem init failed on the room creation!!!");
-      //   // TODO add exit function later
-      // } 
     }
 
     cube->rooms[i] = room_col;
@@ -587,7 +548,6 @@ int main(int argc, char **argv)
   }
 
   /* Fill in */
-  //TODO possbily add isSPressed here later?
 
   /* Goes in the interface loop */
   res = interface(cube);
@@ -634,35 +594,12 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
 {
 
   /* Fill in */
-  // Checks the semaphore, if it is 1 then then does a sem_wait to enter the room
-  // int isAvailable;
-
-  // sem_getvalue(&newroom->roomFull, &isAvailable);
-  // if(isAvailable)
-  // {
-    // int failed = sem_wait(&newroom->roomFull);
-    // if (failed)
-    // {
-    //   printf("sem_wait function failed! in try_room() \n");
-    // }
-    // if room is not full return 0
-    if(newroom->wizards[0] == NULL || newroom->wizards[1] == NULL ) 
+   if(newroom->wizards[0] == NULL || newroom->wizards[1] == NULL ) 
     {
       return 0;
     }
-    else
-    {
-      // sem_post(&newroom->roomFull);
-      // return 1;
-    }
     
-  // }
-  // else
-  // {
-  //   // try room failed
-  //   return 1;
-  // }
-  
+ 
 }
 
 struct wizard * find_opponent(struct wizard *self, struct room *room)
@@ -704,18 +641,7 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
   }
 
   /* Fill in */
-  // oldroom->occupancy -= 1;
-  // newroom->occupancy += 1;
-  // Release control over the old room
-  //TODO remove this line, may be cause of the bug where 3 wizards enter a room
-  // int failed = sem_post(&oldroom->roomFull);
-  // if(failed)
-  // {
-  //   printf("sem_post function failed! in switch_rooms() \n");
-  // }
-
-  /* Updates room wizards and determines opponent */
-  if (newroom->wizards[0] == NULL)
+ if (newroom->wizards[0] == NULL)
   {
     newroom->wizards[0] = w;
     other = newroom->wizards[1];

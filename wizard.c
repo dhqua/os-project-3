@@ -91,7 +91,6 @@ wizard_func(void *wizard_descr)
 
 			printf("Wizard %c%d in room (%d,%d) finds nobody around \n",
 						 self->team, self->id, newroom->x, newroom->y);
-			/* Fill in */
 		}
 		else
 		{
@@ -123,8 +122,6 @@ wizard_func(void *wizard_descr)
 				}
 			}
 
-			/* Fill in */
-			// TODO add post for press S semaphore
 		}
 
 		/* Thinks about what to do next */
@@ -139,7 +136,6 @@ wizard_func(void *wizard_descr)
             cube->game_status = 1;
             return;
         };
-		// sem_post(&stepSemaphore);
 	}
 
 	return NULL;
