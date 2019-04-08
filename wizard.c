@@ -34,7 +34,7 @@ wizard_func(void *wizard_descr)
 		sem_wait(&stepSemaphore);
 
 		// if the game status is one then kill the thread	
-		if(check_winner(cube)){
+		if(check_winner(cube) >= 0){
 					cube->game_status = 1;
 					return;
 				};
@@ -126,7 +126,7 @@ wizard_func(void *wizard_descr)
 			// TODO add post for press S semaphore
 		}
 
-        if(check_winner(cube)){
+        if(check_winner(cube) >= 0){
             cube->game_status = 1;
             return;
         };
@@ -136,6 +136,7 @@ wizard_func(void *wizard_descr)
 		oldroom = newroom;
 		newroom = choose_room(self);
 
+		printPrompt = 1;
 		// sem_post(&stepSemaphore);
 	}
 

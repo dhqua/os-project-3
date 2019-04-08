@@ -22,7 +22,6 @@
 
 
 
-int hasStarted = FALSE;
 void command_line_usage()
 {
   fprintf(stderr, "-size <size of cube> -teamA <size of team> -teamB <size of team> -seed <seed value>\n");
@@ -76,9 +75,12 @@ int check_winner(struct cube *cube)
 
   if (isTeamAActive && isTeamBActive )
   {
-    return 0;
+    return -1;
   } 
-  else 
+  else if(isTeamAActive) 
+  {
+    return 0;
+  } else
   {
     return 1;
   }
@@ -248,7 +250,20 @@ int interface(void *cube_ref)
   //         }
   //     } 
 
-  // }    
+  // } 
+
+
+    if(cube->game_status == 0)
+    {
+      // Spin lock until the wizard is done with its move
+      while(!printPrompt)
+      {
+
+      }
+      // Flips the flag
+      printPrompt = FALSE;
+    }   
+
     line = readline("cube> ");
     if (line == NULL)
       continue;
@@ -269,11 +284,12 @@ int interface(void *cube_ref)
     else if (!strcmp(command, "show"))
     {
       print_cube(cube);
+      printPrompt = 1;
     }
     else if (!strcmp(command, "start"))
     {
       
-      hasStarted = 1;
+      // hasStarted = TRUE;
       if (cube->game_status == 1)
       {
         fprintf(stderr, "Game is over. Cannot be started again\n");
@@ -317,10 +333,10 @@ int interface(void *cube_ref)
         
         // Spin lock until
         printf("after the thread is created!\n");
-        while(check_winner(cube) == 0)
-        {
+        // while(check_winner(cube) == 0)
+        // {
 
-        }  
+        // }  
       }
     }
     else if (!strcmp(command, "stop"))
@@ -334,10 +350,19 @@ int interface(void *cube_ref)
     else if (!strcmp(command, "s"))
     {
       // TODO add step functionality 
-      return 1;
+      sem_post(&stepSemaphore);
+        
+      // return 1;
     }
     else if (!strcmp(command, "c"))
     {
+       while(1)
+       {
+         if(check_winner(cube) < 0 )
+         {
+           sem_post(&stepSemaphore);
+         }
+       }
       // TODO add continue functionality 
       return 1;
     }
@@ -373,6 +398,8 @@ int main(int argc, char **argv)
   // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
   int ret = sem_init(&stepSemaphore, pshared, value);
+  printPrompt = FALSE;
+
 
   i = 1;
   while (i < argc)
@@ -491,10 +518,10 @@ int main(int argc, char **argv)
       /* Fill in */
 
       // Sets initializes semaphore that is declared within the room
-      int pshared = 0;
+      // int pshared = 0;
       // Value set to to 1 to represent that only one thread can check the status of a room at a time
-      int value = 1;
-      int ret = sem_init(&room->roomFull, pshared, value);
+      // int value = 1;
+      // int ret = sem_init(&room->roomFull, pshared, value);
       
       if(ret < 0)
       {
@@ -594,11 +621,11 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
   // sem_getvalue(&newroom->roomFull, &isAvailable);
   // if(isAvailable)
   // {
-    int failed = sem_wait(&newroom->roomFull);
-    if (failed)
-    {
-      printf("sem_wait function failed! in try_room() \n");
-    }
+    // int failed = sem_wait(&newroom->roomFull);
+    // if (failed)
+    // {
+    //   printf("sem_wait function failed! in try_room() \n");
+    // }
     // if room is not full return 0
     if(newroom->wizards[0] == NULL || newroom->wizards[1] == NULL ) 
     {
@@ -606,8 +633,8 @@ int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
     }
     else
     {
-      sem_post(&newroom->roomFull);
-      return 1;
+      // sem_post(&newroom->roomFull);
+      // return 1;
     }
     
   // }
