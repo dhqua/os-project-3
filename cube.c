@@ -32,14 +32,16 @@ void kill_wizards(struct wizard *w)
 {
   /* Fill in */
 
-  int threadCount = w->cube->teamA_size + w->cube->teamB_size;
-  int i;
+  // int threadCount = w->cube->teamA_size + w->cube->teamB_size;
+  // int i;
 
-  // Kills all the the threads
-  for(i = 0; i < threadCount; i++)
-  {
-    pthread_cancel(w->cube->threads[i]);
-  }
+  // // Kills all the the threads
+  // for(i = 0; i < threadCount; i++)
+  // {
+  //   pthread_cancel(w->cube->threads[i]);
+  // }
+
+  w->cube->game_status = 1;
 
   return;
 }

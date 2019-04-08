@@ -43,6 +43,7 @@ wizard_func(void *wizard_descr)
 		// Status is frozen then self sleep until another wizard can wake this thread
 		if (self->status)
 		{
+			sem_post(&cImplementation);
 			int failed = sem_wait(&self->sleep);
 			if (failed)
 			{
