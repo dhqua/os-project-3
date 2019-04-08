@@ -32,16 +32,17 @@ void kill_wizards(struct wizard *w)
 {
   /* Fill in */
 
-  // int threadCount = w->cube->teamA_size + w->cube->teamB_size;
-  // int i;
+  int threadCount = w->cube->teamA_size + w->cube->teamB_size;
+  int i;
 
-  // // Kills all the the threads
-  // for(i = 0; i < threadCount; i++)
-  // {
-  //   pthread_cancel(w->cube->threads[i]);
-  // }
+  // Kills all the the threads
+  for(i = 0; i < threadCount; i++)
+  {
+    pthread_cancel(w->cube->threads[i]);
+  }
+  w->cube->game_status = -1;
 
-  w->cube->game_status = 1;
+  // w->cube->game_status = 1;
 
   return;
 }
@@ -295,9 +296,11 @@ int interface(void *cube_ref)
       if (cube->game_status == 1)
       {
         fprintf(stderr, "Game is over. Cannot be started again\n");
+        printPrompt = TRUE;
       }
       else if (cube->game_status == 0)
       {
+        printPrompt = TRUE;
         fprintf(stderr, "Game is in progress. Cannot be started again\n");
       }
       else
@@ -311,11 +314,10 @@ int interface(void *cube_ref)
         // pass the threads using pthread create
         // pass the wizard_func
         int threadCount = cube->teamA_size + cube->teamB_size;
-        cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount);
+        cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount );
 
         int i;
-        int teamBStart = cube->teamA_size - 1 ; // may be off by 1
-        printf("before the thread is created!\n");
+        int teamBStart = cube->teamA_size; // may be off by 1
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
@@ -335,8 +337,6 @@ int interface(void *cube_ref)
 
         printPrompt = TRUE;
         
-        // Spin lock until
-        printf("after the thread is created!\n");
         // while(check_winner(cube) == 0)
         // {
 
@@ -348,8 +348,8 @@ int interface(void *cube_ref)
       /* Stop the game */
       // Kills all wizards regardless of which team is passed
       kill_wizards(cube->teamA_wizards[0]);
-
-      return 1;
+      printPrompt = TRUE;
+      // return 1;
     }
     else if (!strcmp(command, "s"))
     {
