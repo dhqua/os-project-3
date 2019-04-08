@@ -365,6 +365,14 @@ int interface(void *cube_ref)
          } else
          {
            print_cube(cube);
+           int winner = check_winner(cube);
+           if(winner)
+           {
+             printf("\n\nTeam B is the winner!!\n\n");
+           } else 
+           {
+             printf("\n\nTeam A is the winner!!\n\n");
+           }
            break;
          }
        }
