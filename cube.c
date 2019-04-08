@@ -358,8 +358,9 @@ int interface(void *cube_ref)
     {
        while(1)
        {
-         if(check_winner(cube) < 0 )
+         if(!cube->game_status)
          {
+           sem_wait(&cImplementation);
            sem_post(&stepSemaphore);
          }
        }
@@ -397,7 +398,8 @@ int main(int argc, char **argv)
   int pshared = 0;
   // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
-  int ret = sem_init(&stepSemaphore, pshared, value);
+  sem_init(&stepSemaphore, pshared, value);
+  sem_init(&cImplementation, pshared, value);
   printPrompt = FALSE;
 
 
@@ -523,11 +525,11 @@ int main(int argc, char **argv)
       // int value = 1;
       // int ret = sem_init(&room->roomFull, pshared, value);
       
-      if(ret < 0)
-      {
-        printf("sem init failed on the room creation!!!");
-        // TODO add exit function later
-      } 
+      // if(ret < 0)
+      // {
+      //   printf("sem init failed on the room creation!!!");
+      //   // TODO add exit function later
+      // } 
     }
 
     cube->rooms[i] = room_col;

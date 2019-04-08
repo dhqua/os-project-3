@@ -5,6 +5,7 @@
 #include <semaphore.h>
 
 sem_t stepSemaphore;
+sem_t cImplementation;
 int printPrompt;
 
 struct wizard {

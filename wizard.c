@@ -136,6 +136,7 @@ wizard_func(void *wizard_descr)
 		oldroom = newroom;
 		newroom = choose_room(self);
 
+		sem_post(&cImplementation);
 		printPrompt = 1;
 		// sem_post(&stepSemaphore);
 	}
