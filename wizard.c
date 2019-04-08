@@ -27,7 +27,10 @@ wizard_func(void *wizard_descr)
 
 	/* Chooses the new room */
 	newroom = choose_room(self);
-
+    while(cube->game_status != 0)
+    {
+    //Thread does nothing until all game has officially started
+    }
 	/* Infinite loop */
 	while (1)
 	{

@@ -281,7 +281,7 @@ int interface(void *cube_ref)
       }
       else
       {
-        cube->game_status = 0;
+        //cube->game_status = 0;
 
         /* Start the game */
 
@@ -293,7 +293,7 @@ int interface(void *cube_ref)
         cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount);
 
         int i;
-        int teamBStart = cube->teamA_size - 1 ; // may be off by 1
+        int teamBStart = cube->teamA_size; // may be off by 1
         printf("before the thread is created!\n");
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
@@ -311,8 +311,13 @@ int interface(void *cube_ref)
             printf("\n THE CREATE FUNCTION FAILED! \n");
           }
         }
-        
         printf("after the thread is created!\n");
+        cube->game_status = 0;
+        printf("game has officially started\n");
+        //Puts interface into spin lock, until game is over
+        while(check_winner(cube_ref) != 1){
+
+        }
       }
     }
     else if (!strcmp(command, "stop"))
