@@ -362,6 +362,10 @@ int interface(void *cube_ref)
          {
            sem_wait(&cImplementation);
            sem_post(&stepSemaphore);
+         } else
+         {
+           print_cube(cube);
+           break;
          }
        }
       // TODO add continue functionality 
@@ -398,6 +402,7 @@ int main(int argc, char **argv)
   int pshared = 0;
   // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
+  int stepValue = 0;
   sem_init(&stepSemaphore, pshared, value);
   sem_init(&cImplementation, pshared, value);
   printPrompt = FALSE;

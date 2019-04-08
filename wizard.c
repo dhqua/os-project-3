@@ -126,18 +126,18 @@ wizard_func(void *wizard_descr)
 			// TODO add post for press S semaphore
 		}
 
-        if(check_winner(cube) >= 0){
-            cube->game_status = 1;
-            return;
-        };
 		/* Thinks about what to do next */
 		dostuff();
 
 		oldroom = newroom;
 		newroom = choose_room(self);
 
-		sem_post(&cImplementation);
 		printPrompt = 1;
+		sem_post(&cImplementation);
+        if(check_winner(cube) >= 0){
+            cube->game_status = 1;
+            return;
+        };
 		// sem_post(&stepSemaphore);
 	}
 
