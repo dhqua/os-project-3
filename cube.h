@@ -4,8 +4,11 @@
 #define SOLUTION
 #include <semaphore.h>
 
+// Semaphores used to implement the s (step) and c (continue) functionality
 sem_t stepSemaphore;
 sem_t cImplementation;
+
+// Flag used to trigger the interface to print the next prompt
 int printPrompt;
 
 struct wizard {
@@ -16,7 +19,6 @@ struct wizard {
   int status; /* 0: alive, 1: frozen */
   struct cube *cube; 
 
-  /* Fill in as required */
   //Semaphore that will be used to sleep the wizard 
   sem_t sleep;
 };
@@ -25,8 +27,6 @@ struct room {
   int x;
   int y;
   struct wizard *wizards[2];
-
-  /* Fill in as required */
 };
 
 struct cube {

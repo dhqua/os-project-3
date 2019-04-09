@@ -31,6 +31,7 @@ wizard_func(void *wizard_descr)
 	/* Infinite loop */
 	while (1)
 	{
+		// Waits for s to pressed before it moves
 		sem_wait(&stepSemaphore);
 
 		// if the game status is one then kill the thread	
@@ -78,7 +79,6 @@ wizard_func(void *wizard_descr)
 					 self->team, self->id,
 					 oldroom->x, oldroom->y, newroom->x, newroom->y);
 
-		/* Fill in */
 
 		/* Self is active and has control over both rooms */
 		switch_rooms(self, oldroom, newroom);

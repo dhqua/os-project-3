@@ -26,12 +26,10 @@ void command_line_usage()
 {
   fprintf(stderr, "-size <size of cube> -teamA <size of team> -teamB <size of team> -seed <seed value>\n");
 }
-//TODO implement kill wizards after thread functionality has been added
-// Kills all of the wizards given either teamA or teamB
+
+// Kills all of the wizards in the game, but leaves them on the board and allows a user to restart the game
 void kill_wizards(struct wizard *w)
 {
-  /* Fill in */
-
   int threadCount = w->cube->teamA_size + w->cube->teamB_size;
   int i;
 
@@ -42,7 +40,6 @@ void kill_wizards(struct wizard *w)
   }
   w->cube->game_status = -1;
 
-
   return;
 }
 
@@ -50,7 +47,6 @@ void kill_wizards(struct wizard *w)
 // -1 game still active , 0 -team A ,1 - team B
 int check_winner(struct cube *cube)
 {
-  /* Fill in */
   // Check if all the wizards of a givn team are frozen
   int isTeamAActive = FALSE;
   int isTeamBActive = FALSE;
@@ -214,7 +210,6 @@ struct wizard *init_wizard(struct cube *cube, char team, int id)
     }
   }
 
-  /* Fill in */
   // Initializes semaphore that is declared within the wizard
   int pshared = 0;
   int value = 1;
@@ -291,12 +286,13 @@ int interface(void *cube_ref)
         cube->game_status = 0;
 
         /* Start the game */
-        //Creates the thread of all wizard threads
+        //Creates the thread of all wizard 
+        //Initializes an array that will hold all of the threads
         int threadCount = cube->teamA_size + cube->teamB_size;
         cube->threads = (pthread_t *)malloc(sizeof(pthread_t *) * threadCount );
 
         int i;
-        int teamBStart = cube->teamA_size; // may be off by 1
+        int teamBStart = cube->teamA_size;
         // Start threads for team A
         for(i = 0; i < cube->teamA_size; i++)
         {
@@ -305,7 +301,7 @@ int interface(void *cube_ref)
             printf("\n THE CREATE FUNCTION FAILED! \n");
           }
         }
-        // Start threajds for team B
+        // Start threads for team B
         for(i = 0; i < cube->teamB_size; i++, teamBStart++)
         {
           if( pthread_create(&cube->threads[teamBStart], NULL, wizard_func, cube->teamB_wizards[i]))
@@ -329,12 +325,13 @@ int interface(void *cube_ref)
     {
       // Posts to the stepSemaphore to allow one wizard thread to wake up and finish its turn 
       sem_post(&stepSemaphore);
-        
     }
     else if (!strcmp(command, "c"))
     {
        while(1)
        {
+         //If the game is still in progress then post to wizard
+         // The sem_wait prevents the infinite while loop from over posting to the semaphore
          if(!cube->game_status)
          {
            sem_wait(&cImplementation);
@@ -382,9 +379,8 @@ int main(int argc, char **argv)
   /* Parse command line and fill:
      teamA_size, timeBsize, cube_size, and seed */
      
-  // Initializes semaphore that is declared within the room
+  //Initialize semaphores
   int pshared = 0;
-  // Value set to to 1 to represent that only one thread can check the status of a room at a time
   int value = 1;
   int stepValue = 0;
   sem_init(&stepSemaphore, pshared, stepValue);
@@ -506,7 +502,6 @@ int main(int argc, char **argv)
       room->wizards[1] = NULL;
       room_col[j] = room;
 
-      /* Fill in */
 
     }
 
@@ -546,8 +541,6 @@ int main(int argc, char **argv)
     }
     cube->teamB_wizards[i] = wizard_descr;
   }
-
-  /* Fill in */
 
   /* Goes in the interface loop */
   res = interface(cube);
@@ -592,8 +585,7 @@ struct room * choose_room(struct wizard *w)
 // Returns if found a spot in a room successfully
 int try_room(struct wizard *w, struct room *oldroom, struct room *newroom)
 {
-
-  /* Fill in */
+   // Checks if a room has an empty spot
    if(newroom->wizards[0] == NULL || newroom->wizards[1] == NULL ) 
     {
       return 0;
@@ -640,7 +632,6 @@ void switch_rooms(struct wizard *w, struct room *oldroom, struct room *newroom)
     exit(1);
   }
 
-  /* Fill in */
  if (newroom->wizards[0] == NULL)
   {
     newroom->wizards[0] = w;
@@ -678,7 +669,8 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
            self->team, self->id, room->x, room->y,
            other->team, other->id);
 
-    /* Fill in */
+    // Sets the other wizards status to frozen
+    // That thread will then freeze itself at the beginning of its next turn
     other->status = 1;
   }
 
@@ -690,7 +682,6 @@ int fight_wizard(struct wizard *self, struct wizard *other, struct room *room)
            self->team, self->id, room->x, room->y,
            other->team, other->id);
 
-    /* Fill in */
     self->status = 1;
     int failed = sem_wait(&self->sleep);
     if (failed)
@@ -716,8 +707,6 @@ int free_wizard(struct wizard *self, struct wizard *other, struct room *room)
     printf("Wizard %c%d in room (%d,%d) unfreezes friend %c%d\n",
            self->team, self->id, room->x, room->y,
            other->team, other->id);
-
-    /* Fill in */
 
     other->status = 0;
     int failed = sem_post(&other->sleep);
